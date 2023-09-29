@@ -7,18 +7,27 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody2D), typeof(SpriteRenderer))]
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] 
+	#region Inspector Settings
+	[SerializeField] 
         float moveSpeed = 10, jumpStrength = 9;
 	[SerializeField]
-	    private Rigidbody2D rigidBody = null;
+	    Rigidbody2D rigidBody = null;
+	#endregion
 
-	bool isOnGround;
-	float xDelta;
-    @_2DJumpnRun inputAction = null;
+	#region Const Members
+	// const members
+	#endregion
 
+	#region Private Members
+	bool _isOnGround;
+	float _xDelta;
+    @_2DJumpnRun _inputAction = null;
+	#endregion
+
+	#region Lifecycle Methods
 	private void Awake()
 	{
-		inputAction = new();
+		_inputAction = new();
 	}
 
 	// Start is called before the first frame update
@@ -30,59 +39,57 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-		rigidBody.velocity = new Vector2 (xDelta, rigidBody.velocity.y);
+		rigidBody.velocity = new Vector2(_xDelta, rigidBody.velocity.y);
 	}
 
 	private void OnEnable()
 	{
-		inputAction.Enable();
-        inputAction.Player.Move.performed += OnMove;
-		inputAction.Player.Move.canceled += OnMoveCanceled;
-		inputAction.Player.Jump.performed += OnJump;
+		_inputAction.Enable();
+        _inputAction.Player.Move.performed += OnMove;
+		_inputAction.Player.Move.canceled += OnMoveCanceled;
+		_inputAction.Player.Jump.performed += OnJump;
 	}
 
 	private void OnDisable()
 	{
-        inputAction.Player.Move.performed -= OnMove;
-		inputAction.Player.Move.canceled -= OnMoveCanceled;
-		inputAction.Player.Move.performed -= OnJump;
-		inputAction.Disable();
+        _inputAction.Player.Move.performed -= OnMove;
+		_inputAction.Player.Move.canceled -= OnMoveCanceled;
+		_inputAction.Player.Jump.performed -= OnJump;
+		_inputAction.Disable();
 	}
+	#endregion
 
+	#region Action Handlers
 	public void OnMove(InputAction.CallbackContext context)
 	{
-		Debug.Log($"MOOVIIINNGG!!");
-		
-		xDelta = context.ReadValue<Vector2>().x * moveSpeed;
+		_xDelta = context.ReadValue<Vector2>().x * moveSpeed;
 	}
 
 	public void OnMoveCanceled(InputAction.CallbackContext context)
 	{
-		Debug.Log($"MOOVEE CANCEELEEDD!!");
-
-		xDelta = 0;
+		_xDelta = 0;
 	}
 
 	public void OnJump(InputAction.CallbackContext context)
 	{
-		Debug.Log("JUUMMPIIINNG!!");
-
-		if (isOnGround)
+		if (_isOnGround)
 			rigidBody.velocity += new Vector2(0, context.ReadValue<Vector2>().y * jumpStrength);
 	}
-     
+	#endregion
+
+	#region Collision Handlers
 	private void OnCollisionEnter2D(Collision2D collision)
 	{
 		if(collision.gameObject.CompareTag("Ground"))
         {
-			isOnGround = true;
-            Debug.Log("Player has landed on ground.");
+			_isOnGround = true;
         }
 	}
 
 	private void OnCollisionExit2D(Collision2D collision)
 	{
-        isOnGround = false;
-        Debug.Log("Player has left the ground.");
+        _isOnGround = false;
 	}
+	#endregion
 }
+
