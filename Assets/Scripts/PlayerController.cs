@@ -13,8 +13,7 @@ public class PlayerController : MonoBehaviour
 	    private Rigidbody2D rigidBody = null;
 
 	bool isOnGround;
-    float xDelta, yDelta; 
-    Vector2 newDirection;
+	float xDelta;
     @_2DJumpnRun inputAction = null;
 
 	private void Awake()
@@ -31,8 +30,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-		Vector3 moveDelta = new Vector3(xDelta, 0, 0);
-		transform.position += moveDelta;
+		rigidBody.velocity = new Vector2 (xDelta, rigidBody.velocity.y);
 	}
 
 	private void OnEnable()
@@ -55,7 +53,7 @@ public class PlayerController : MonoBehaviour
 	{
 		Debug.Log($"MOOVIIINNGG!!");
 		
-		xDelta = context.ReadValue<Vector2>().x * moveSpeed * Time.deltaTime;
+		xDelta = context.ReadValue<Vector2>().x * moveSpeed;
 	}
 
 	public void OnMoveCanceled(InputAction.CallbackContext context)
@@ -78,7 +76,6 @@ public class PlayerController : MonoBehaviour
 		if(collision.gameObject.CompareTag("Ground"))
         {
 			isOnGround = true;
-			yDelta = 0;
             Debug.Log("Player has landed on ground.");
         }
 	}

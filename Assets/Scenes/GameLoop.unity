@@ -184,7 +184,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -232,8 +232,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9a9ec38b214d15479074aca1ddf85c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 540
-  jumpStrength: 600
+  moveSpeed: 10
+  jumpStrength: 12
   rigidBody: {fileID: 0}
 --- !u!114 &1628138366
 MonoBehaviour:
@@ -324,6 +324,10 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: bb5c020b-91a2-415f-92d7-9ec0ab4f78d9
     m_ActionName: UI/TrackedDeviceOrientation
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 05322b1c-eb33-4256-b292-6b742fa0a316
+    m_ActionName: Player/Jump[/Keyboard/w,/Keyboard/upArrow]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -344,6 +348,10 @@ PrefabInstance:
     - target: {fileID: 1382860171819727242, guid: 474925189b7c1b6409a5ce6c64c6ed1e, type: 3}
       propertyPath: m_Constraints
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1382860171819727242, guid: 474925189b7c1b6409a5ce6c64c6ed1e, type: 3}
+      propertyPath: m_GravityScale
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1382860171819727242, guid: 474925189b7c1b6409a5ce6c64c6ed1e, type: 3}
       propertyPath: m_UseFullKinematicContacts
