@@ -22,15 +22,21 @@ public class PlayerController : MonoBehaviour
 	#endregion
 
 	#region Const Members
+
 	const string GROUND_TAG = "Ground";
 	const int MOVEMENT_SCALE_FACTOR = 35;
+	const float COYOTE_TIME = 0.5f;
+
 	#endregion
 
 	#region Private Members
+
 	bool _isOnGround, _isJumping = false, _isMoving = false;
 	float _targetXVelocity, _currentXVelocity = 0.0f;
     @_2DJumpnRun _inputAction = null;
 	int _jumpCount = 2;
+	IEnumerator _coroutine;
+
 	#endregion
 
 	#region Lifecycle Methods
@@ -43,6 +49,7 @@ public class PlayerController : MonoBehaviour
 	void Start()
     {
         if (rigidBody == null) rigidBody = GetComponent<Rigidbody2D>();
+		_coroutine = FallAfterCoyoteTime();
 	}
 
 	private void FixedUpdate()
@@ -89,6 +96,12 @@ public class PlayerController : MonoBehaviour
 			rigidBody.velocity = new Vector2(rigidBody.velocity.x, context.ReadValue<Vector2>().y * jumpStrength * Time.fixedDeltaTime * MOVEMENT_SCALE_FACTOR);
 			_jumpCount--;
 			_isJumping = true;
+
+			if (_isOnGround)
+				Debug.Log("Jumping from ground!!!");
+
+			_isOnGround = false;
+			StopCoroutine(_coroutine);
 		}
 	}
 	#endregion
@@ -101,17 +114,36 @@ public class PlayerController : MonoBehaviour
 			_isOnGround = true;
 			_isJumping = false;
 			_jumpCount = multiJumpsAllowed ? extraJumps + 1 : 1;
+			StopCoroutine(_coroutine);
         }
 	}
 
 	private void OnCollisionExit2D(Collision2D collision)
 	{
-		if (collision.gameObject.CompareTag(GROUND_TAG))
+		if (collision.gameObject.CompareTag(GROUND_TAG) && !_isJumping)
+		{
+			_coroutine = FallAfterCoyoteTime();
+			StartCoroutine(_coroutine);
+		}
+			
+	}
+	#endregion
+
+	#region Coroutines
+
+	IEnumerator FallAfterCoyoteTime()
+	{
+		Debug.Log("Start Coyote Time!!");
+		yield return new WaitForSeconds(COYOTE_TIME);
+		Debug.Log("End Coyote Time!!");
+		
+		if (_isOnGround)
 		{
 			_isOnGround = false;
-			if (!_isJumping) _jumpCount--;
+			_jumpCount--;
 		}
 	}
+
 	#endregion
 }
 
