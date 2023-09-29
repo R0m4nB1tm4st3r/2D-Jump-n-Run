@@ -24,6 +24,8 @@ public class PlayerController : MonoBehaviour
 	#region Const Members
 
 	const string GROUND_TAG = "Ground";
+	const string COYOTE_TIME_START_MSG = "Start Coyote Time!!";
+	const string COYOTE_TIME_END_MSG = "End Coyote Time!!";
 	const int MOVEMENT_SCALE_FACTOR = 35;
 	const float COYOTE_TIME = 0.5f;
 
@@ -35,7 +37,7 @@ public class PlayerController : MonoBehaviour
 	float _targetXVelocity, _currentXVelocity = 0.0f;
     @_2DJumpnRun _inputAction = null;
 	int _jumpCount = 2;
-	IEnumerator _coroutine;
+	IEnumerator _coroutine = null;
 
 	#endregion
 
@@ -49,7 +51,6 @@ public class PlayerController : MonoBehaviour
 	void Start()
     {
         if (rigidBody == null) rigidBody = GetComponent<Rigidbody2D>();
-		_coroutine = FallAfterCoyoteTime();
 	}
 
 	private void FixedUpdate()
@@ -97,11 +98,10 @@ public class PlayerController : MonoBehaviour
 			_jumpCount--;
 			_isJumping = true;
 
-			if (_isOnGround)
-				Debug.Log("Jumping from ground!!!");
-
 			_isOnGround = false;
-			StopCoroutine(_coroutine);
+
+			if (_coroutine != null)
+				StopCoroutine(_coroutine);
 		}
 	}
 	#endregion
@@ -114,7 +114,9 @@ public class PlayerController : MonoBehaviour
 			_isOnGround = true;
 			_isJumping = false;
 			_jumpCount = multiJumpsAllowed ? extraJumps + 1 : 1;
-			StopCoroutine(_coroutine);
+
+			if (_coroutine != null)
+				StopCoroutine(_coroutine);
         }
 	}
 
@@ -127,15 +129,16 @@ public class PlayerController : MonoBehaviour
 		}
 			
 	}
+
 	#endregion
 
 	#region Coroutines
 
 	IEnumerator FallAfterCoyoteTime()
 	{
-		Debug.Log("Start Coyote Time!!");
+		Debug.Log(COYOTE_TIME_START_MSG);
 		yield return new WaitForSeconds(COYOTE_TIME);
-		Debug.Log("End Coyote Time!!");
+		Debug.Log(COYOTE_TIME_END_MSG);
 		
 		if (_isOnGround)
 		{
