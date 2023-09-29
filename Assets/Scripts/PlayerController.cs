@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,7 +10,9 @@ public class PlayerController : MonoBehaviour
 {
 	#region Inspector Settings
 	[SerializeField] 
-        float moveSpeed = 10, jumpStrength = 9;
+        float moveSpeed = 10, jumpStrength = 12;
+	[SerializeField, Range(0.02f, 0.06f)]
+		float accelerationFactor = 0.05f;
 	[SerializeField]
 	    Rigidbody2D rigidBody = null;
 	[SerializeField]
@@ -19,12 +22,13 @@ public class PlayerController : MonoBehaviour
 	#endregion
 
 	#region Const Members
-	string GROUND_TAG = "Ground";
+	const string GROUND_TAG = "Ground";
+	const int MOVEMENT_SCALE_FACTOR = 35;
 	#endregion
 
 	#region Private Members
-	bool _isOnGround, _isJumping = false;
-	float _xDelta;
+	bool _isOnGround, _isJumping = false, _isMoving = false;
+	float _targetXVelocity, _currentXVelocity = 0.0f;
     @_2DJumpnRun _inputAction = null;
 	int _jumpCount = 2;
 	#endregion
@@ -41,10 +45,11 @@ public class PlayerController : MonoBehaviour
         if (rigidBody == null) rigidBody = GetComponent<Rigidbody2D>();
 	}
 
-    // Update is called once per frame
-    void Update()
-    {
-		rigidBody.velocity = new Vector2(_xDelta, rigidBody.velocity.y);
+	private void FixedUpdate()
+	{
+		_currentXVelocity = _isMoving ? _currentXVelocity + _targetXVelocity * accelerationFactor : rigidBody.velocity.x;
+		_currentXVelocity = _isMoving ? Mathf.Clamp(_currentXVelocity, Mathf.Min(_targetXVelocity, 0), Mathf.Max(_targetXVelocity, 0)) : _currentXVelocity;
+		rigidBody.velocity = new Vector2(_currentXVelocity, rigidBody.velocity.y);
 	}
 
 	private void OnEnable()
@@ -67,19 +72,21 @@ public class PlayerController : MonoBehaviour
 	#region Action Handlers
 	public void OnMove(InputAction.CallbackContext context)
 	{
-		_xDelta = context.ReadValue<Vector2>().x * moveSpeed;
+		_targetXVelocity = context.ReadValue<Vector2>().x * moveSpeed * Time.fixedDeltaTime * MOVEMENT_SCALE_FACTOR;
+		_isMoving = true;
 	}
 
 	public void OnMoveCanceled(InputAction.CallbackContext context)
 	{
-		_xDelta = 0;
+		_targetXVelocity = 0;
+		_isMoving= false;
 	}
 
 	public void OnJump(InputAction.CallbackContext context)
 	{
 		if (_isOnGround || (multiJumpsAllowed && _jumpCount > 0))
 		{
-			rigidBody.velocity = new Vector2(rigidBody.velocity.x, context.ReadValue<Vector2>().y * jumpStrength);
+			rigidBody.velocity = new Vector2(rigidBody.velocity.x, context.ReadValue<Vector2>().y * jumpStrength * Time.fixedDeltaTime * MOVEMENT_SCALE_FACTOR);
 			_jumpCount--;
 			_isJumping = true;
 		}
@@ -93,7 +100,7 @@ public class PlayerController : MonoBehaviour
         {
 			_isOnGround = true;
 			_isJumping = false;
-			_jumpCount = multiJumpsAllowed ? extraJumps : 1;
+			_jumpCount = multiJumpsAllowed ? extraJumps + 1 : 1;
         }
 	}
 
