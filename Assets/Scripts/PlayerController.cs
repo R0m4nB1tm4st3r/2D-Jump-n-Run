@@ -12,16 +12,21 @@ public class PlayerController : MonoBehaviour
         float moveSpeed = 10, jumpStrength = 9;
 	[SerializeField]
 	    Rigidbody2D rigidBody = null;
+	[SerializeField]
+		bool multiJumpsAllowed = false;
+	[SerializeField, Range(1, 3)]
+		int extraJumps = 1;
 	#endregion
 
 	#region Const Members
-	// const members
+	string GROUND_TAG = "Ground";
 	#endregion
 
 	#region Private Members
-	bool _isOnGround;
+	bool _isOnGround, _isJumping = false;
 	float _xDelta;
     @_2DJumpnRun _inputAction = null;
+	int _jumpCount = 2;
 	#endregion
 
 	#region Lifecycle Methods
@@ -72,23 +77,33 @@ public class PlayerController : MonoBehaviour
 
 	public void OnJump(InputAction.CallbackContext context)
 	{
-		if (_isOnGround)
-			rigidBody.velocity += new Vector2(0, context.ReadValue<Vector2>().y * jumpStrength);
+		if (_isOnGround || (multiJumpsAllowed && _jumpCount > 0))
+		{
+			rigidBody.velocity = new Vector2(rigidBody.velocity.x, context.ReadValue<Vector2>().y * jumpStrength);
+			_jumpCount--;
+			_isJumping = true;
+		}
 	}
 	#endregion
 
 	#region Collision Handlers
 	private void OnCollisionEnter2D(Collision2D collision)
 	{
-		if(collision.gameObject.CompareTag("Ground"))
+		if(collision.gameObject.CompareTag(GROUND_TAG))
         {
 			_isOnGround = true;
+			_isJumping = false;
+			_jumpCount = multiJumpsAllowed ? extraJumps : 1;
         }
 	}
 
 	private void OnCollisionExit2D(Collision2D collision)
 	{
-        _isOnGround = false;
+		if (collision.gameObject.CompareTag(GROUND_TAG))
+		{
+			_isOnGround = false;
+			if (!_isJumping) _jumpCount--;
+		}
 	}
 	#endregion
 }
