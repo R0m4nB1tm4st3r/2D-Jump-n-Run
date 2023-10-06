@@ -26,8 +26,7 @@ public class PlayerController : MonoBehaviour
 	const string GROUND_TAG = "Ground";
 	const string COYOTE_TIME_START_MSG = "Start Coyote Time!!";
 	const string COYOTE_TIME_END_MSG = "End Coyote Time!!";
-	const int MOVEMENT_SCALE_FACTOR = 35;
-	const float COYOTE_TIME = 0.5f;
+	const float COYOTE_TIME = 0.2f;
 
 	#endregion
 
@@ -67,7 +66,9 @@ public class PlayerController : MonoBehaviour
 		_inputAction.Player.Move.canceled += OnMoveCanceled;
 		_inputAction.Player.Jump.performed += OnJump;
 	}
-
+	/// <summary>
+	/// ssdgsjtsetj
+	/// </summary>
 	private void OnDisable()
 	{
         _inputAction.Player.Move.performed -= OnMove;
@@ -78,9 +79,13 @@ public class PlayerController : MonoBehaviour
 	#endregion
 
 	#region Action Handlers
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="context"></param>
 	public void OnMove(InputAction.CallbackContext context)
 	{
-		_targetXVelocity = context.ReadValue<Vector2>().x * moveSpeed * Time.fixedDeltaTime * MOVEMENT_SCALE_FACTOR;
+		_targetXVelocity = context.ReadValue<Vector2>().x * moveSpeed;
 		_isMoving = true;
 	}
 
@@ -94,7 +99,9 @@ public class PlayerController : MonoBehaviour
 	{
 		if (_isOnGround || (multiJumpsAllowed && _jumpCount > 0))
 		{
-			rigidBody.velocity = new Vector2(rigidBody.velocity.x, context.ReadValue<Vector2>().y * jumpStrength * Time.fixedDeltaTime * MOVEMENT_SCALE_FACTOR);
+			rigidBody.velocity = new Vector2(
+				x: rigidBody.velocity.x, 
+				y: context.ReadValue<Vector2>().y * jumpStrength);
 			_jumpCount--;
 			_isJumping = true;
 
