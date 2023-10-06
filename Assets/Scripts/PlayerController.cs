@@ -8,91 +8,79 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody2D), typeof(SpriteRenderer))]
 public class PlayerController : MonoBehaviour
 {
-	#region Inspector Settings
-	[SerializeField] 
-        float moveSpeed = 10, jumpStrength = 12;
-	[SerializeField, Range(0.02f, 0.06f)]
-		float accelerationFactor = 0.05f;
-	[SerializeField]
-	    Rigidbody2D rigidBody = null;
-	[SerializeField]
-		bool multiJumpsAllowed = false;
-	[SerializeField, Range(1, 3)]
-		int extraJumps = 1;
-	#endregion
-
 	#region Const Members
 
-	const string GROUND_TAG = "Ground";
-	const string COYOTE_TIME_START_MSG = "Start Coyote Time!!";
-	const string COYOTE_TIME_END_MSG = "End Coyote Time!!";
-	const float COYOTE_TIME = 0.2f;
+	const string _GroundTag = "Ground";
+	const string _CoyoteTimeStartMsg = "Start Coyote Time!!";
+	const string _CoyoteTimeEndMsg = "End Coyote Time!!";
+	const float _CoyoteTime = 0.2f;
 
 	#endregion
 
 	#region Private Members
 
-	bool _isOnGround, _isJumping = false, _isMoving = false;
+	[SerializeField]
+	float moveSpeed = 10, jumpStrength = 10;
+	[SerializeField, Range(0.002f, 0.01f)]
+	float accelerationFactor = 0.01f;
+	[SerializeField]
+	Rigidbody2D rigidBody = null;
+	[SerializeField]
+	bool multiJumpsAllowed = false;
+	[SerializeField, Range(1, 3)]
+	int extraJumps = 1;
+
+	bool _isOnGround, _isJumping = false;
 	float _targetXVelocity, _currentXVelocity = 0.0f;
     @_2DJumpnRun _inputAction = null;
 	int _jumpCount = 2;
-	IEnumerator _coroutine = null;
+	IEnumerator _moveCoroutine = null;
+	IEnumerator _coyoteCoroutine = null;
 
 	#endregion
 
 	#region Lifecycle Methods
-	private void Awake()
+
+	void Awake()
 	{
 		_inputAction = new();
 	}
 
-	// Start is called before the first frame update
 	void Start()
     {
         if (rigidBody == null) rigidBody = GetComponent<Rigidbody2D>();
 	}
 
-	private void FixedUpdate()
-	{
-		_currentXVelocity = _isMoving ? _currentXVelocity + _targetXVelocity * accelerationFactor : rigidBody.velocity.x;
-		_currentXVelocity = _isMoving ? Mathf.Clamp(_currentXVelocity, Mathf.Min(_targetXVelocity, 0), Mathf.Max(_targetXVelocity, 0)) : _currentXVelocity;
-		rigidBody.velocity = new Vector2(_currentXVelocity, rigidBody.velocity.y);
-	}
-
-	private void OnEnable()
+	void OnEnable()
 	{
 		_inputAction.Enable();
         _inputAction.Player.Move.performed += OnMove;
 		_inputAction.Player.Move.canceled += OnMoveCanceled;
 		_inputAction.Player.Jump.performed += OnJump;
 	}
-	/// <summary>
-	/// ssdgsjtsetj
-	/// </summary>
-	private void OnDisable()
+
+	void OnDisable()
 	{
         _inputAction.Player.Move.performed -= OnMove;
 		_inputAction.Player.Move.canceled -= OnMoveCanceled;
 		_inputAction.Player.Jump.performed -= OnJump;
 		_inputAction.Disable();
 	}
+
 	#endregion
 
 	#region Action Handlers
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="context"></param>
+
 	public void OnMove(InputAction.CallbackContext context)
 	{
 		_targetXVelocity = context.ReadValue<Vector2>().x * moveSpeed;
-		_isMoving = true;
+		_moveCoroutine = MovePlayer();
+		StartCoroutine(_moveCoroutine);
 	}
 
 	public void OnMoveCanceled(InputAction.CallbackContext context)
 	{
-		_targetXVelocity = 0;
-		_isMoving= false;
+		if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
 	}
 
 	public void OnJump(InputAction.CallbackContext context)
@@ -107,32 +95,34 @@ public class PlayerController : MonoBehaviour
 
 			_isOnGround = false;
 
-			if (_coroutine != null)
-				StopCoroutine(_coroutine);
+			if (_coyoteCoroutine != null)
+				StopCoroutine(_coyoteCoroutine);
 		}
 	}
+
 	#endregion
 
 	#region Collision Handlers
+
 	private void OnCollisionEnter2D(Collision2D collision)
 	{
-		if(collision.gameObject.CompareTag(GROUND_TAG))
+		if(collision.gameObject.CompareTag(_GroundTag))
         {
 			_isOnGround = true;
 			_isJumping = false;
 			_jumpCount = multiJumpsAllowed ? extraJumps + 1 : 1;
 
-			if (_coroutine != null)
-				StopCoroutine(_coroutine);
+			if (_coyoteCoroutine != null)
+				StopCoroutine(_coyoteCoroutine);
         }
 	}
 
 	private void OnCollisionExit2D(Collision2D collision)
 	{
-		if (collision.gameObject.CompareTag(GROUND_TAG) && !_isJumping)
+		if (collision.gameObject.CompareTag(_GroundTag) && !_isJumping)
 		{
-			_coroutine = FallAfterCoyoteTime();
-			StartCoroutine(_coroutine);
+			_coyoteCoroutine = FallAfterCoyoteTime();
+			StartCoroutine(_coyoteCoroutine);
 		}
 			
 	}
@@ -141,11 +131,23 @@ public class PlayerController : MonoBehaviour
 
 	#region Coroutines
 
+	IEnumerator MovePlayer()
+	{
+		float newVelocityX;
+		while (true)
+		{
+			newVelocityX = _currentXVelocity + _targetXVelocity * accelerationFactor;
+			_currentXVelocity = Mathf.Clamp(newVelocityX, Mathf.Min(_targetXVelocity, 0), Mathf.Max(_targetXVelocity, 0));
+			rigidBody.velocity = new Vector2(_currentXVelocity, rigidBody.velocity.y);
+			yield return null;
+		}
+	}
+
 	IEnumerator FallAfterCoyoteTime()
 	{
-		Debug.Log(COYOTE_TIME_START_MSG);
-		yield return new WaitForSeconds(COYOTE_TIME);
-		Debug.Log(COYOTE_TIME_END_MSG);
+		Debug.Log(_CoyoteTimeStartMsg);
+		yield return new WaitForSeconds(_CoyoteTime);
+		Debug.Log(_CoyoteTimeEndMsg);
 		
 		if (_isOnGround)
 		{

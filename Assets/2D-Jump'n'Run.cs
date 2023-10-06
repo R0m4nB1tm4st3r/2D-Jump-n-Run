@@ -286,6 +286,17 @@ public partial class @_2DJumpnRun: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
+                    ""name"": ""up"",
+                    ""id"": ""46963046-3360-4277-a037-b5a59ca071b5"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
                     ""name"": """",
                     ""id"": ""4640b2cd-0515-4241-ac74-270b6fe43256"",
                     ""path"": ""<XRController>/{Primary2DAxis}"",
