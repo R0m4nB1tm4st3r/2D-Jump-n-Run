@@ -10,10 +10,14 @@ public class PlayerController : MonoBehaviour
 {
 	#region Const Members
 
-	const string _GroundTag = "Ground";
-	const string _CoyoteTimeStartMsg = "Start Coyote Time!!";
-	const string _CoyoteTimeEndMsg = "End Coyote Time!!";
-	const float _CoyoteTime = 0.2f;
+	const string GroundTag = "Ground";
+	const string CoyoteTimeStartMsg = "Start Coyote Time!!";
+	const string CoyoteTimeEndMsg = "End Coyote Time!!";
+	const string AnimationParamIsRunning = "isRunning";
+	const string AnimationParamIsJumping = "isJumping";
+	const string AnimationParamIsInMidAir = "isInMidAir";
+	const string AnimationStateJumping = "Player_Jumping";
+	const float CoyoteTime = 0.2f;
 
 	#endregion
 
@@ -30,12 +34,14 @@ public class PlayerController : MonoBehaviour
 	[SerializeField, Range(1, 3)]
 	int extraJumps = 1;
 
-	bool _isOnGround, _isJumping = false;
-	float _targetXVelocity, _currentXVelocity = 0.0f;
-    @_2DJumpnRun _inputAction = null;
-	int _jumpCount = 2;
-	IEnumerator _moveCoroutine = null;
-	IEnumerator _coyoteCoroutine = null;
+	bool isOnGround, isJumping = false;
+	float targetXVelocity, currentXVelocity = 0.0f;
+    @_2DJumpnRun inputAction = null;
+	int jumpCount = 2;
+	IEnumerator moveCoroutine = null;
+	IEnumerator coyoteCoroutine = null;
+	Animator animator = null;
+	SpriteRenderer spriteRenderer = null;
 
 	#endregion
 
@@ -43,28 +49,30 @@ public class PlayerController : MonoBehaviour
 
 	void Awake()
 	{
-		_inputAction = new();
+		inputAction = new();
 	}
 
 	void Start()
     {
         if (rigidBody == null) rigidBody = GetComponent<Rigidbody2D>();
+		animator = GetComponent<Animator>();
+		spriteRenderer = GetComponent<SpriteRenderer>();
 	}
 
 	void OnEnable()
 	{
-		_inputAction.Enable();
-        _inputAction.Player.Move.performed += OnMove;
-		_inputAction.Player.Move.canceled += OnMoveCanceled;
-		_inputAction.Player.Jump.performed += OnJump;
+		inputAction.Enable();
+        inputAction.Player.Move.performed += OnMove;
+		inputAction.Player.Move.canceled += OnMoveCanceled;
+		inputAction.Player.Jump.performed += OnJump;
 	}
 
 	void OnDisable()
 	{
-        _inputAction.Player.Move.performed -= OnMove;
-		_inputAction.Player.Move.canceled -= OnMoveCanceled;
-		_inputAction.Player.Jump.performed -= OnJump;
-		_inputAction.Disable();
+        inputAction.Player.Move.performed -= OnMove;
+		inputAction.Player.Move.canceled -= OnMoveCanceled;
+		inputAction.Player.Jump.performed -= OnJump;
+		inputAction.Disable();
 	}
 
 	#endregion
@@ -73,30 +81,39 @@ public class PlayerController : MonoBehaviour
 
 	public void OnMove(InputAction.CallbackContext context)
 	{
-		_targetXVelocity = context.ReadValue<Vector2>().x * moveSpeed;
-		_moveCoroutine = MovePlayer();
-		StartCoroutine(_moveCoroutine);
+		animator.SetBool(AnimationParamIsRunning, true);
+
+		targetXVelocity = context.ReadValue<Vector2>().x * moveSpeed;
+		spriteRenderer.flipX = targetXVelocity < 0;
+
+		moveCoroutine = MovePlayer();
+		StartCoroutine(moveCoroutine);
 	}
 
 	public void OnMoveCanceled(InputAction.CallbackContext context)
 	{
-		if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
+		if (moveCoroutine != null) StopCoroutine(moveCoroutine);
+
+		animator.SetBool(AnimationParamIsRunning, false);
 	}
 
 	public void OnJump(InputAction.CallbackContext context)
 	{
-		if (_isOnGround || (multiJumpsAllowed && _jumpCount > 0))
+		if (isOnGround || (multiJumpsAllowed && jumpCount > 0))
 		{
+			animator.SetBool(AnimationParamIsInMidAir, true);
+			animator.Play(AnimationStateJumping);
+
 			rigidBody.velocity = new Vector2(
 				x: rigidBody.velocity.x, 
 				y: context.ReadValue<Vector2>().y * jumpStrength);
-			_jumpCount--;
-			_isJumping = true;
+			jumpCount--;
+			isJumping = true;
 
-			_isOnGround = false;
+			isOnGround = false;
 
-			if (_coyoteCoroutine != null)
-				StopCoroutine(_coyoteCoroutine);
+			if (coyoteCoroutine != null)
+				StopCoroutine(coyoteCoroutine);
 		}
 	}
 
@@ -106,23 +123,27 @@ public class PlayerController : MonoBehaviour
 
 	private void OnCollisionEnter2D(Collision2D collision)
 	{
-		if(collision.gameObject.CompareTag(_GroundTag))
+		if(collision.gameObject.CompareTag(GroundTag))
         {
-			_isOnGround = true;
-			_isJumping = false;
-			_jumpCount = multiJumpsAllowed ? extraJumps + 1 : 1;
+			animator.SetBool(AnimationParamIsInMidAir, false);
 
-			if (_coyoteCoroutine != null)
-				StopCoroutine(_coyoteCoroutine);
+			isOnGround = true;
+			isJumping = false;
+			jumpCount = multiJumpsAllowed ? extraJumps + 1 : 1;
+
+			if (coyoteCoroutine != null)
+				StopCoroutine(coyoteCoroutine);
         }
 	}
 
 	private void OnCollisionExit2D(Collision2D collision)
 	{
-		if (collision.gameObject.CompareTag(_GroundTag) && !_isJumping)
+		if (collision.gameObject.CompareTag(GroundTag) && !isJumping)
 		{
-			_coyoteCoroutine = FallAfterCoyoteTime();
-			StartCoroutine(_coyoteCoroutine);
+            animator.SetBool(AnimationParamIsInMidAir, true);
+
+            coyoteCoroutine = FallAfterCoyoteTime();
+			StartCoroutine(coyoteCoroutine);
 		}
 			
 	}
@@ -136,23 +157,23 @@ public class PlayerController : MonoBehaviour
 		float newVelocityX;
 		while (true)
 		{
-			newVelocityX = _currentXVelocity + _targetXVelocity * accelerationFactor;
-			_currentXVelocity = Mathf.Clamp(newVelocityX, Mathf.Min(_targetXVelocity, 0), Mathf.Max(_targetXVelocity, 0));
-			rigidBody.velocity = new Vector2(_currentXVelocity, rigidBody.velocity.y);
+			newVelocityX = currentXVelocity + targetXVelocity * accelerationFactor;
+			currentXVelocity = Mathf.Clamp(newVelocityX, Mathf.Min(targetXVelocity, 0), Mathf.Max(targetXVelocity, 0));
+			rigidBody.velocity = new Vector2(currentXVelocity, rigidBody.velocity.y);
 			yield return null;
 		}
 	}
 
 	IEnumerator FallAfterCoyoteTime()
 	{
-		Debug.Log(_CoyoteTimeStartMsg);
-		yield return new WaitForSeconds(_CoyoteTime);
-		Debug.Log(_CoyoteTimeEndMsg);
+		Debug.Log(CoyoteTimeStartMsg);
+		yield return new WaitForSeconds(CoyoteTime);
+		Debug.Log(CoyoteTimeEndMsg);
 		
-		if (_isOnGround)
+		if (isOnGround)
 		{
-			_isOnGround = false;
-			_jumpCount--;
+			isOnGround = false;
+			jumpCount--;
 		}
 	}
 

@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 6683478460988613958}
   - component: {fileID: 6028217659719310285}
   - component: {fileID: 1382860171819727242}
-  - component: {fileID: 8405666632097615918}
   - component: {fileID: 4156499254409439343}
+  - component: {fileID: 1610680268458347653}
+  - component: {fileID: 2309887456667908556}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -30,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -76,16 +77,16 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
-  m_Color: {r: 0.29104662, g: 0.7301857, b: 0.7830189, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 97c29d53b73683e449a1d00aaedd2716, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_DrawMode: 1
+  m_Size: {x: 10, y: 10}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
+  m_MaskInteraction: 2
   m_SpriteSortPoint: 0
 --- !u!50 &1382860171819727242
 Rigidbody2D:
@@ -114,8 +115,26 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!60 &8405666632097615918
-PolygonCollider2D:
+--- !u!114 &4156499254409439343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6574239465697003549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9a9ec38b214d15479074aca1ddf85c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 10
+  jumpStrength: 10
+  accelerationFactor: 0.00504
+  rigidBody: {fileID: 0}
+  multiJumpsAllowed: 0
+  extraJumps: 2
+--- !u!70 &1610680268458347653
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -146,37 +165,27 @@ PolygonCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.28866667}
-    oldSize: {x: 1, y: 1}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: 0, y: 0.61}
-      - {x: -0.52, y: -0.302}
-      - {x: 0.52, y: -0.302}
-  m_UseDelaunayMesh: 0
---- !u!114 &4156499254409439343
-MonoBehaviour:
+  m_Offset: {x: -0.06567347, y: -0.8061253}
+  m_Size: {x: 2.2013333, y: 3.2096698}
+  m_Direction: 0
+--- !u!95 &2309887456667908556
+Animator:
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6574239465697003549}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9a9ec38b214d15479074aca1ddf85c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 10
-  jumpStrength: 10
-  accelerationFactor: 0.00504
-  rigidBody: {fileID: 0}
-  multiJumpsAllowed: 0
-  extraJumps: 2
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 03edef4ee836a964880c34eac6457c99, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
