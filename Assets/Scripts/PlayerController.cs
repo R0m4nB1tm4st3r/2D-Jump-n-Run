@@ -25,8 +25,8 @@ public class PlayerController : MonoBehaviour
 
 	[SerializeField]
 	float moveSpeed = 10, jumpStrength = 10;
-	[SerializeField, Range(0.002f, 0.01f)]
-	float accelerationFactor = 0.01f;
+	[SerializeField, Range(0.01f, 0.05f)]
+	float accelerationFactor = 0.03f;
 	[SerializeField]
 	Rigidbody2D rigidBody = null;
 	[SerializeField]
@@ -154,12 +154,13 @@ public class PlayerController : MonoBehaviour
 
 	IEnumerator MovePlayer()
 	{
-		float newVelocityX;
+		Vector2 velocity;
 		while (true)
 		{
-			newVelocityX = currentXVelocity + targetXVelocity * accelerationFactor;
-			currentXVelocity = Mathf.Clamp(newVelocityX, Mathf.Min(targetXVelocity, 0), Mathf.Max(targetXVelocity, 0));
-			rigidBody.velocity = new Vector2(currentXVelocity, rigidBody.velocity.y);
+			velocity = rigidBody.velocity;
+			velocity.x = Mathf.Clamp(	velocity.x + targetXVelocity * accelerationFactor,
+										Mathf.Min(targetXVelocity, 0), Mathf.Max(targetXVelocity, 0));
+			rigidBody.velocity = velocity;
 			yield return null;
 		}
 	}
