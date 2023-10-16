@@ -18,6 +18,8 @@ public class PlayerController : MonoBehaviour
 	const string AnimationParamIsInMidAir = "isInMidAir";
 	const string AnimationStateJumping = "Player_Jumping";
 	const float CoyoteTime = 0.2f;
+	const float DefaultDrag = 1.0f;
+	const float StopMovementDrag = 200.0f;
 
 	#endregion
 
@@ -25,7 +27,7 @@ public class PlayerController : MonoBehaviour
 
 	[SerializeField]
 	float moveSpeed = 10, jumpStrength = 10;
-	[SerializeField, Range(0.01f, 0.05f)]
+	[SerializeField, Range(0.02f, 0.08f)]
 	float accelerationFactor = 0.03f;
 	[SerializeField]
 	Rigidbody2D rigidBody = null;
@@ -35,7 +37,7 @@ public class PlayerController : MonoBehaviour
 	int extraJumps = 1;
 
 	bool isOnGround, isJumping = false;
-	float targetXVelocity, currentXVelocity = 0.0f;
+	float targetXVelocity;
     @_2DJumpnRun inputAction = null;
 	int jumpCount = 2;
 	IEnumerator moveCoroutine = null;
@@ -93,6 +95,10 @@ public class PlayerController : MonoBehaviour
 	public void OnMoveCanceled(InputAction.CallbackContext context)
 	{
 		if (moveCoroutine != null) StopCoroutine(moveCoroutine);
+
+		Vector2 velocity = rigidBody.velocity;
+		velocity.x = targetXVelocity * Time.fixedDeltaTime;
+		rigidBody.velocity = velocity;
 
 		animator.SetBool(AnimationParamIsRunning, false);
 	}
