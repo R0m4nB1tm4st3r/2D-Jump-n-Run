@@ -129,7 +129,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 12
   jumpStrength: 30
-  accelerationFactor: 0.156
+  accelerationFactor: 0.2
   rigidBody: {fileID: 0}
   multiJumpsAllowed: 0
   extraJumps: 2

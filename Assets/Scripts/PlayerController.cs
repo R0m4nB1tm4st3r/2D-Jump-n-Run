@@ -14,12 +14,11 @@ public class PlayerController : MonoBehaviour
 	const string CoyoteTimeStartMsg = "Start Coyote Time!!";
 	const string CoyoteTimeEndMsg = "End Coyote Time!!";
 	const string AnimationParamIsRunning = "isRunning";
-	const string AnimationParamIsJumping = "isJumping";
 	const string AnimationParamIsInMidAir = "isInMidAir";
 	const string AnimationStateJumping = "Player_Jumping";
 	const float CoyoteTime = 0.2f;
-	const float DefaultDrag = 1.0f;
-	const float StopMovementDrag = 200.0f;
+	const float ZeroVelocity = 0f;
+	const int DefaultJumpCount = 1;
 
 	#endregion
 
@@ -86,7 +85,7 @@ public class PlayerController : MonoBehaviour
 		animator.SetBool(AnimationParamIsRunning, true);
 
 		targetXVelocity = context.ReadValue<Vector2>().x * moveSpeed;
-		spriteRenderer.flipX = targetXVelocity < 0;
+		spriteRenderer.flipX = targetXVelocity < ZeroVelocity;
 
 		moveCoroutine = MovePlayer();
 		StartCoroutine(moveCoroutine);
@@ -135,7 +134,7 @@ public class PlayerController : MonoBehaviour
 
 			isOnGround = true;
 			isJumping = false;
-			jumpCount = multiJumpsAllowed ? extraJumps + 1 : 1;
+			jumpCount = multiJumpsAllowed ? extraJumps + DefaultJumpCount : DefaultJumpCount;
 
 			if (coyoteCoroutine != null)
 				StopCoroutine(coyoteCoroutine);
@@ -165,7 +164,8 @@ public class PlayerController : MonoBehaviour
 		{
 			velocity = rigidBody.velocity;
 			velocity.x = Mathf.Clamp(	velocity.x + targetXVelocity * accelerationFactor,
-										Mathf.Min(targetXVelocity, 0), Mathf.Max(targetXVelocity, 0));
+										Mathf.Min(targetXVelocity, ZeroVelocity), 
+										Mathf.Max(targetXVelocity, ZeroVelocity));
 			rigidBody.velocity = velocity;
 			yield return new WaitForFixedUpdate();
 		}
