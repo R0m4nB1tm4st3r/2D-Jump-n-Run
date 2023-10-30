@@ -40,6 +40,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Respawn",
+                    "type": "Button",
+                    "id": "8d13bcc9-c796-4cbd-81fa-2b0f98cdd463",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -231,7 +240,7 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "W",
+                    "name": "Keyboard",
                     "id": "effe1364-5fac-42cd-baf6-90acc51c19a9",
                     "path": "Dpad",
                     "interactions": "",
@@ -293,6 +302,17 @@
                     "processors": "",
                     "groups": "Joystick",
                     "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "29d2e4de-3c0e-4f30-884f-369213a8dac5",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Respawn",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -388,6 +408,33 @@
                     "type": "PassThrough",
                     "id": "bb5c020b-91a2-415f-92d7-9ec0ab4f78d9",
                     "expectedControlType": "Quaternion",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Quit",
+                    "type": "Button",
+                    "id": "3a9499af-6dbe-47d8-9c8a-d3ec97db06f3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ConfirmQuit",
+                    "type": "Button",
+                    "id": "1802fe33-d9fc-4ae1-9268-798104ede0de",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "CancelQuit",
+                    "type": "Button",
+                    "id": "7fa06b41-5244-4cc9-8f21-d7597ddbed7a",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -809,6 +856,39 @@
                     "processors": "",
                     "groups": "XR",
                     "action": "TrackedDeviceOrientation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7cf4a02b-e647-4cbc-86c5-bf1e563c505e",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Quit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1f812cde-53c4-46f4-a963-276f22d01c3c",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ConfirmQuit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8a868282-1c7c-417e-bd5a-ac5697dc9d55",
+                    "path": "<Keyboard>/n",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CancelQuit",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

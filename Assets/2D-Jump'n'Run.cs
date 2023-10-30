@@ -62,6 +62,15 @@ public partial class @_2DJumpnRun: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Respawn"",
+                    ""type"": ""Button"",
+                    ""id"": ""8d13bcc9-c796-4cbd-81fa-2b0f98cdd463"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -253,7 +262,7 @@ public partial class @_2DJumpnRun: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""W"",
+                    ""name"": ""Keyboard"",
                     ""id"": ""effe1364-5fac-42cd-baf6-90acc51c19a9"",
                     ""path"": ""Dpad"",
                     ""interactions"": """",
@@ -315,6 +324,17 @@ public partial class @_2DJumpnRun: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Joystick"",
                     ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""29d2e4de-3c0e-4f30-884f-369213a8dac5"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Respawn"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -410,6 +430,33 @@ public partial class @_2DJumpnRun: IInputActionCollection2, IDisposable
                     ""type"": ""PassThrough"",
                     ""id"": ""bb5c020b-91a2-415f-92d7-9ec0ab4f78d9"",
                     ""expectedControlType"": ""Quaternion"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Quit"",
+                    ""type"": ""Button"",
+                    ""id"": ""3a9499af-6dbe-47d8-9c8a-d3ec97db06f3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ConfirmQuit"",
+                    ""type"": ""Button"",
+                    ""id"": ""1802fe33-d9fc-4ae1-9268-798104ede0de"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CancelQuit"",
+                    ""type"": ""Button"",
+                    ""id"": ""7fa06b41-5244-4cc9-8f21-d7597ddbed7a"",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -833,6 +880,39 @@ public partial class @_2DJumpnRun: IInputActionCollection2, IDisposable
                     ""action"": ""TrackedDeviceOrientation"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7cf4a02b-e647-4cbc-86c5-bf1e563c505e"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Quit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1f812cde-53c4-46f4-a963-276f22d01c3c"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ConfirmQuit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8a868282-1c7c-417e-bd5a-ac5697dc9d55"",
+                    ""path"": ""<Keyboard>/n"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CancelQuit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -906,6 +986,7 @@ public partial class @_2DJumpnRun: IInputActionCollection2, IDisposable
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
+        m_Player_Respawn = m_Player.FindAction("Respawn", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -918,6 +999,9 @@ public partial class @_2DJumpnRun: IInputActionCollection2, IDisposable
         m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
+        m_UI_Quit = m_UI.FindAction("Quit", throwIfNotFound: true);
+        m_UI_ConfirmQuit = m_UI.FindAction("ConfirmQuit", throwIfNotFound: true);
+        m_UI_CancelQuit = m_UI.FindAction("CancelQuit", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -983,6 +1067,7 @@ public partial class @_2DJumpnRun: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Fire;
+    private readonly InputAction m_Player_Respawn;
     public struct PlayerActions
     {
         private @_2DJumpnRun m_Wrapper;
@@ -991,6 +1076,7 @@ public partial class @_2DJumpnRun: IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @Look => m_Wrapper.m_Player_Look;
         public InputAction @Fire => m_Wrapper.m_Player_Fire;
+        public InputAction @Respawn => m_Wrapper.m_Player_Respawn;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1012,6 +1098,9 @@ public partial class @_2DJumpnRun: IInputActionCollection2, IDisposable
             @Fire.started += instance.OnFire;
             @Fire.performed += instance.OnFire;
             @Fire.canceled += instance.OnFire;
+            @Respawn.started += instance.OnRespawn;
+            @Respawn.performed += instance.OnRespawn;
+            @Respawn.canceled += instance.OnRespawn;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1028,6 +1117,9 @@ public partial class @_2DJumpnRun: IInputActionCollection2, IDisposable
             @Fire.started -= instance.OnFire;
             @Fire.performed -= instance.OnFire;
             @Fire.canceled -= instance.OnFire;
+            @Respawn.started -= instance.OnRespawn;
+            @Respawn.performed -= instance.OnRespawn;
+            @Respawn.canceled -= instance.OnRespawn;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1059,6 +1151,9 @@ public partial class @_2DJumpnRun: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_RightClick;
     private readonly InputAction m_UI_TrackedDevicePosition;
     private readonly InputAction m_UI_TrackedDeviceOrientation;
+    private readonly InputAction m_UI_Quit;
+    private readonly InputAction m_UI_ConfirmQuit;
+    private readonly InputAction m_UI_CancelQuit;
     public struct UIActions
     {
         private @_2DJumpnRun m_Wrapper;
@@ -1073,6 +1168,9 @@ public partial class @_2DJumpnRun: IInputActionCollection2, IDisposable
         public InputAction @RightClick => m_Wrapper.m_UI_RightClick;
         public InputAction @TrackedDevicePosition => m_Wrapper.m_UI_TrackedDevicePosition;
         public InputAction @TrackedDeviceOrientation => m_Wrapper.m_UI_TrackedDeviceOrientation;
+        public InputAction @Quit => m_Wrapper.m_UI_Quit;
+        public InputAction @ConfirmQuit => m_Wrapper.m_UI_ConfirmQuit;
+        public InputAction @CancelQuit => m_Wrapper.m_UI_CancelQuit;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1112,6 +1210,15 @@ public partial class @_2DJumpnRun: IInputActionCollection2, IDisposable
             @TrackedDeviceOrientation.started += instance.OnTrackedDeviceOrientation;
             @TrackedDeviceOrientation.performed += instance.OnTrackedDeviceOrientation;
             @TrackedDeviceOrientation.canceled += instance.OnTrackedDeviceOrientation;
+            @Quit.started += instance.OnQuit;
+            @Quit.performed += instance.OnQuit;
+            @Quit.canceled += instance.OnQuit;
+            @ConfirmQuit.started += instance.OnConfirmQuit;
+            @ConfirmQuit.performed += instance.OnConfirmQuit;
+            @ConfirmQuit.canceled += instance.OnConfirmQuit;
+            @CancelQuit.started += instance.OnCancelQuit;
+            @CancelQuit.performed += instance.OnCancelQuit;
+            @CancelQuit.canceled += instance.OnCancelQuit;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -1146,6 +1253,15 @@ public partial class @_2DJumpnRun: IInputActionCollection2, IDisposable
             @TrackedDeviceOrientation.started -= instance.OnTrackedDeviceOrientation;
             @TrackedDeviceOrientation.performed -= instance.OnTrackedDeviceOrientation;
             @TrackedDeviceOrientation.canceled -= instance.OnTrackedDeviceOrientation;
+            @Quit.started -= instance.OnQuit;
+            @Quit.performed -= instance.OnQuit;
+            @Quit.canceled -= instance.OnQuit;
+            @ConfirmQuit.started -= instance.OnConfirmQuit;
+            @ConfirmQuit.performed -= instance.OnConfirmQuit;
+            @ConfirmQuit.canceled -= instance.OnConfirmQuit;
+            @CancelQuit.started -= instance.OnCancelQuit;
+            @CancelQuit.performed -= instance.OnCancelQuit;
+            @CancelQuit.canceled -= instance.OnCancelQuit;
         }
 
         public void RemoveCallbacks(IUIActions instance)
@@ -1214,6 +1330,7 @@ public partial class @_2DJumpnRun: IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnFire(InputAction.CallbackContext context);
+        void OnRespawn(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
@@ -1227,5 +1344,8 @@ public partial class @_2DJumpnRun: IInputActionCollection2, IDisposable
         void OnRightClick(InputAction.CallbackContext context);
         void OnTrackedDevicePosition(InputAction.CallbackContext context);
         void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
+        void OnQuit(InputAction.CallbackContext context);
+        void OnConfirmQuit(InputAction.CallbackContext context);
+        void OnCancelQuit(InputAction.CallbackContext context);
     }
 }

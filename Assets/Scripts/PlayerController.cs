@@ -63,17 +63,58 @@ public class PlayerController : MonoBehaviour
 	void OnEnable()
 	{
 		inputAction.Enable();
-        inputAction.Player.Move.performed += OnMove;
-		inputAction.Player.Move.canceled += OnMoveCanceled;
-		inputAction.Player.Jump.performed += OnJump;
+		AttachInputActions();
 	}
 
 	void OnDisable()
 	{
-        inputAction.Player.Move.performed -= OnMove;
+        DetachInputActions();
+		inputAction.Disable();
+	}
+
+	#endregion
+
+	#region Private Methods
+
+	void ActivateControls()
+	{
+		inputAction.Player.Move.performed += OnMove;
+		inputAction.Player.Move.canceled += OnMoveCanceled;
+		inputAction.Player.Jump.performed += OnJump;
+	}
+
+	void AttachInputActions()
+	{
+		ActivateControls();
+		inputAction.UI.Quit.performed += OnOpenQuitDialogue;
+		inputAction.UI.CancelQuit.performed += OnCloseQuitDialogue;
+	}
+
+	void DeactivateControls()
+	{
+		StopMovement();
+
+		inputAction.Player.Move.performed -= OnMove;
 		inputAction.Player.Move.canceled -= OnMoveCanceled;
 		inputAction.Player.Jump.performed -= OnJump;
-		inputAction.Disable();
+	}
+
+	void DetachInputActions()
+	{
+		inputAction.UI.Quit.performed -= OnOpenQuitDialogue;
+		inputAction.UI.CancelQuit.performed -= OnCloseQuitDialogue;
+		DeactivateControls();
+	}
+
+	void StopMovement()
+	{
+		if (moveCoroutine != null) StopCoroutine(moveCoroutine);
+
+		Vector2 velocity = rigidBody.velocity;
+		velocity.x = targetXVelocity * Time.fixedDeltaTime;
+		rigidBody.velocity = velocity;
+
+		animator.SetBool(AnimationParamIsRunning, false);
 	}
 
 	#endregion
@@ -93,13 +134,7 @@ public class PlayerController : MonoBehaviour
 
 	public void OnMoveCanceled(InputAction.CallbackContext context)
 	{
-		if (moveCoroutine != null) StopCoroutine(moveCoroutine);
-
-		Vector2 velocity = rigidBody.velocity;
-		velocity.x = targetXVelocity * Time.fixedDeltaTime;
-		rigidBody.velocity = velocity;
-
-		animator.SetBool(AnimationParamIsRunning, false);
+		StopMovement();
 	}
 
 	public void OnJump(InputAction.CallbackContext context)
@@ -120,6 +155,16 @@ public class PlayerController : MonoBehaviour
 			if (coyoteCoroutine != null)
 				StopCoroutine(coyoteCoroutine);
 		}
+	}
+
+	public void OnOpenQuitDialogue(InputAction.CallbackContext context)
+	{
+		DeactivateControls();
+	}
+
+	public void OnCloseQuitDialogue(InputAction.CallbackContext context)
+	{
+		ActivateControls();
 	}
 
 	#endregion
